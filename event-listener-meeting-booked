@@ -1,0 +1,41 @@
+<script>
+window.addEventListener("message", function(event) {
+  // Allow HubSpot origins (add your custom domain if using one)
+  var allowedOrigins = [
+    'https://meetings.hubspot.com',
+    'https://meetings-eu1.hubspot.com',
+    'https://app.hubspot.com'
+  ];
+  
+  if (allowedOrigins.indexOf(event.origin) === -1) return;
+  if (!event.data.meetingBookSucceeded) return;
+  
+  // Extract the payload
+  var payload = event.data.meetingsPayload;
+  var bookingResponse = payload && payload.bookingResponse;
+  var postResponse = bookingResponse && bookingResponse.postResponse;
+  var contact = postResponse && postResponse.contact;
+  var eventData = bookingResponse && bookingResponse.event;
+  var organizer = postResponse && postResponse.organizer;
+  
+  // Debug: Log full payload to see all available data
+  console.log('HubSpot Meeting Booked - Full Payload:', event.data.meetingsPayload);
+  
+  // Push to dataLayer
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    'event': 'hubspot_meeting_booked',
+    'hs_meeting_email': (contact && contact.email) || '',
+    'hs_meeting_firstname': (contact && contact.firstName) || '',
+    'hs_meeting_lastname': (contact && contact.lastName) || '',
+    'hs_form_guid': (payload && payload.formGuid) || '',
+    'hs_organizer': (organizer && organizer.name) || '',
+    'hs_meeting_date': (eventData && eventData.dateString) || '',
+    'hs_meeting_duration': (eventData && eventData.duration) || '',
+    'hs_link_type': (payload && payload.linkType) || '',
+    'hs_user_slug': (payload && payload.userSlug) || ''
+  });
+  
+  console.log('GTM: HubSpot meeting event pushed to dataLayer');
+});
+</script>
