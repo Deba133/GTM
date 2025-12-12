@@ -1,4 +1,5 @@
 <script>
+// This GTM Script is only for the Embedded Code for the HS meeting Scheduler
 window.addEventListener("message", function(event) {
   // Allow HubSpot origins (add your custom domain if using one)
   var allowedOrigins = [
